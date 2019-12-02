@@ -17,6 +17,7 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   var _loading = true;
+  var videoData;
   final url = "https://api.letsbuildthatapp.com/youtube/home_feed";
 
   _fetchData() async {
@@ -26,8 +27,12 @@ class MyAppState extends State<MyApp> {
     if (response.statusCode == 200) {
       final map = json.decode(response.body);
       final videos = map["videos"];
-      videos.forEach((video) {
-        print(video["name"]);
+      // this.videoData = videos;
+
+      // For circular progress bar to false if it is succeed loading data
+      setState(() {
+        _loading = false;
+        this.videoData = videos;
       });
     }
   }
@@ -43,7 +48,7 @@ class MyAppState extends State<MyApp> {
               icon: new Icon(Icons.refresh),
               onPressed: () {
                 setState(() {
-                  _loading = false;
+                  _loading = true;
                 });
                 _fetchData();
               },
@@ -53,7 +58,32 @@ class MyAppState extends State<MyApp> {
         body: new Center(
           child: _loading
               ? new CircularProgressIndicator()
-              : new Text("Done Loading!"),
+              : new ListView.builder(
+                  itemCount: this.videoData != null ? this.videoData.length : 0,
+                  itemBuilder: (context, i) {
+                    final video = this.videoData[i];
+                    return new Column(
+                      children: <Widget>[
+                        new Container(
+                            padding: new EdgeInsets.all(16.0),
+                            child: new Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                new Image.network(video["imageUrl"]),
+                                new Container(height: 8.0),
+                                new Text(
+                                  video["name"],
+                                  style: new TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            )),
+                        new Divider()
+                      ],
+                    );
+                  },
+                ),
         ),
       ),
     );
