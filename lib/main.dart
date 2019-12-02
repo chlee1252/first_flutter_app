@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -62,30 +63,41 @@ class MyAppState extends State<MyApp> {
                   itemCount: this.videoData != null ? this.videoData.length : 0,
                   itemBuilder: (context, i) {
                     final video = this.videoData[i];
-                    return new Column(
-                      children: <Widget>[
-                        new Container(
-                            padding: new EdgeInsets.all(16.0),
-                            child: new Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                new Image.network(video["imageUrl"]),
-                                new Container(height: 8.0),
-                                new Text(
-                                  video["name"],
-                                  style: new TextStyle(
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            )),
-                        new Divider()
-                      ],
-                    );
+                    return new DataCell(video);
                   },
                 ),
         ),
       ),
     );
+  }
+}
+
+class DataCell extends StatelessWidget {
+  final video;
+
+  DataCell(this.video);
+
+  @override
+  Widget build(BuildContext context) {
+    return new Column(
+      children: <Widget>[
+        new Container(
+            padding: new EdgeInsets.all(16.0),
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                new Image.network(video["imageUrl"]),
+                new Container(height: 8.0),
+                new Text(
+                  video["name"],
+                  style: new TextStyle(
+                      fontSize: 16.0, fontWeight: FontWeight.bold),
+                ),
+              ],
+            )),
+        new Divider()
+      ],
+    );
+    // return new Text("This is a video cell");
   }
 }
